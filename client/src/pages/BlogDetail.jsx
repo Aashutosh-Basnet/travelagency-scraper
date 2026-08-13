@@ -69,8 +69,12 @@ function BlogDetail() {
     );
   }
 
+  const currentUserId = user?.id || user?._id;
+  const blogAuthorId = blog.author?._id || blog.author?.id || blog.author;
   const isAuthor =
-    user && (blog.author?._id === user.id || blog.author === user.id);
+    Boolean(currentUserId) &&
+    Boolean(blogAuthorId) &&
+    blogAuthorId.toString() === currentUserId.toString();
   const authorName = blog.author?.username || "Anonymous Writer";
   const authorAvatar = blog.author?.avatar
     ? `${SERVER_URL}/upload/${blog.author.avatar}`

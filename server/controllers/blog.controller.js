@@ -43,7 +43,7 @@ export const createBlog = async (req, res) => {
     }
 
     const image = req.file ? req.file.filename : null;
-    const authorId = req.session?.user?.id;
+    const authorId = req.session?.user?.id || req.session?.user?._id;
 
     if (!authorId) {
       return res
@@ -78,22 +78,26 @@ export const updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, body } = req.body;
-    const userId = req.session?.user?.id;
+    const userId = req.session?.user?.id || req.session?.user?._id;
 
     const existingBlog = await Blog.findById(id);
     if (!existingBlog) {
       return res.status(404).json({ message: "Blog not found." });
     }
 
-    if (existingBlog.author.toString() !== userId) {
+    const authorIdStr = existingBlog.author?._id
+      ? existingBlog.author._id.toString()
+      : existingBlog.author.toString();
+
+    if (!userId || authorIdStr !== userId.toString()) {
       return res
         .status(403)
         .json({ message: "You can only update your own blogs." });
     }
 
     const updateData = {};
-    if (title) updateData.title = title;
-    if (body) updateData.body = body;
+    if (title !== undefined && title.trim() !== "") updateData.title = title;
+    if (body !== undefined && body.trim() !== "") updateData.body = body;
     if (req.file) updateData.image = req.file.filename;
 
     const updatedBlog = await Blog.findByIdAndUpdate(id, updateData, {
@@ -114,14 +118,18 @@ export const updateBlog = async (req, res) => {
 export const deleteBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.session?.user?.id;
+    const userId = req.session?.user?.id || req.session?.user?._id;
 
     const existingBlog = await Blog.findById(id);
     if (!existingBlog) {
       return res.status(404).json({ message: "Blog not found." });
     }
 
-    if (existingBlog.author.toString() !== userId) {
+    const authorIdStr = existingBlog.author?._id
+      ? existingBlog.author._id.toString()
+      : existingBlog.author.toString();
+
+    if (!userId || authorIdStr !== userId.toString()) {
       return res
         .status(403)
         .json({ message: "You can only delete your own blogs." });

@@ -4,9 +4,11 @@ import { FiEdit2, FiTrash2, FiClock } from "react-icons/fi";
 const SERVER_URL = "http://localhost:3000";
 
 function BlogCard({ blog, currentUserId, onDelete }) {
+  const blogAuthorId = blog.author?._id || blog.author?.id || blog.author;
   const isAuthor =
-    currentUserId &&
-    (blog.author?._id === currentUserId || blog.author === currentUserId);
+    Boolean(currentUserId) &&
+    Boolean(blogAuthorId) &&
+    blogAuthorId.toString() === currentUserId.toString();
 
   const formattedDate = blog.createdAt
     ? new Date(blog.createdAt).toLocaleDateString("en-US", {

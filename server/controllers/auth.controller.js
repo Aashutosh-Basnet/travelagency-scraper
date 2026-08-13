@@ -28,7 +28,8 @@ export const register = async (req, res) => {
     });
 
     const sessionUser = {
-      id: user._id,
+      id: user._id.toString(),
+      _id: user._id.toString(),
       username: user.username,
       email: user.email,
       avatar: user.avatar,
@@ -75,7 +76,8 @@ export const login = async (req, res) => {
     }
 
     const sessionUser = {
-      id: user._id,
+      id: user._id.toString(),
+      _id: user._id.toString(),
       username: user.username,
       email: user.email,
       avatar: user.avatar,
@@ -111,11 +113,21 @@ export const getMe = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.session.user.id).select("-password");
+    const userId = req.session.user.id || req.session.user._id;
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.json({ user });
+
+    const sessionUser = {
+      id: user._id.toString(),
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+    };
+
+    return res.json({ user: sessionUser });
   } catch (error) {
     return res.status(500).json({ message: "Error fetching session user" });
   }
