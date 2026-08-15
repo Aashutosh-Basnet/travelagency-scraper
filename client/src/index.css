@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -107,3 +108,6 @@ html:not(.dark) ::-webkit-scrollbar-thumb {
 html:not(.dark) ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa;
 }
+=======
+@import "tailwindcss";
+>>>>>>> upstream/main
