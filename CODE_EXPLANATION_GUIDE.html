@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Website — Complete Architecture & Code Explanation Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --card-bg: #f8fafc;
+      --border: #e2e8f0;
+      --violet: #7c3aed;
+      --violet-light: #ede9fe;
+      --cyan: #0891b2;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --card-bg: #121215;
+        --border: #27272a;
+        --violet: #a78bfa;
+        --violet-light: #2e1065;
+        --cyan: #22d3ee;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Print / PDF Controls */
+    .print-header {
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(124, 58, 237, 0.1);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--violet);
+      padding: 14px 24px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+
+    .print-btn {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .print-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Cover Header */
+    .doc-header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      background-color: var(--violet-light);
+      color: var(--violet);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* Section Styles */
+    section {
+      margin-bottom: 45px;
+    }
+
+    h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      border-left: 4px solid var(--violet);
+      padding-left: 14px;
+      margin-bottom: 20px;
+      margin-top: 35px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 22px 0 10px 0;
+      color: var(--text);
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(124, 58, 237, 0.08);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      margin: 15px 0;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--violet-light);
+      color: var(--violet);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Callout Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .card.highlight {
+      border-color: var(--violet);
+      background: rgba(124, 58, 237, 0.03);
+    }
+
+    .tree {
+      font-family: 'JetBrains Mono', monospace;
+      background: #09090b;
+      color: #38bdf8;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    /* PDF Print Rules */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        padding: 0;
+      }
+      .print-header {
+        display: none !important;
+      }
+      .card, pre, table {
+        page-break-inside: avoid;
+      }
+      h2, h3 {
+        page-break-after: avoid;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      pre {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+      code {
+        background: #f1f5f9 !important;
+        color: #4f46e5 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Top Action Bar (hidden in PDF output) -->
+    <div class="print-header">
+      <div>
+        <strong style="font-size: 15px;">📄 Save as PDF Document</strong>
+        <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Click the button to open the print dialog and choose <b>"Save as PDF"</b>.</p>
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        🖨️ Print / Save as PDF
+      </button>
+    </div>
+
+    <!-- Document Header -->
+    <header class="doc-header">
+      <span class="badge">Technical Architecture & Code Guide</span>
+      <h1>Full-Stack Blog Platform ("Editorial")</h1>
+      <p class="doc-subtitle">A comprehensive breakdown of the Express backend, MongoDB session authentication, REST APIs, and React Vite frontend.</p>
+    </header>
+
+    <!-- SECTION 1: Architecture Overview -->
+    <section>
+      <h2>1. Architecture Overview</h2>
+      <p>
+        The project is a decoupled full-stack publishing web application built with a modern Express backend and a React (Vite) frontend. Authentication is managed using <b>MongoDB-backed persistent sessions</b> (via <code>express-session</code> and <code>connect-mongo</code>), paired with <code>bcrypt</code> password hashing.
+      </p>
+
+      <div class="card highlight">
+        <h3 style="margin-top: 0;">Key Architectural Decisions:</h3>
+        <ul>
+          <li><b>Session Authentication vs JWT:</b> Sessions are stored server-side in MongoDB. Only the <code>userId</code> is stored in the session record. Sensitive data (passwords/hashes) is never stored in session state.</li>
+          <li><b>Cookie Security:</b> Cookies use <code>httpOnly: true</code> to prevent XSS theft, with <code>sameSite: 'lax'</code> for seamless first-party transmission.</li>
+          <li><b>Image Uploads:</b> Multer handles multipart file uploads directly to the server's <code>uploads/</code> directory with file-type validation.</li>
+          <li><b>Single-Origin Tunneling (ngrok / localtunnel):</b> Vite's development proxy routes <code>/api</code> and <code>/uploads</code> to port 5000, eliminating third-party cookie restrictions when sharing publicly.</li>
+        </ul>
+      </div>
+
+      <h3>Project Structure</h3>
+      <pre class="tree">
+blog-website/
+├── server/
+│   ├── config/db.js            -> MongoDB connection logic
+│   ├── models/
+│   │   ├── User.js             -> User schema (name, email, passwordHash)
+│   │   └── Post.js             -> Post schema (title, content, author, tags, status)
+│   ├── middleware/
+│   │   ├── auth.js             -> requireAuth session guard
+│   │   └── upload.js           -> Multer cover image uploader
+│   ├── controllers/
+│   │   ├── authController.js   -> Signup, login, logout, getMe handlers
+│   │   └── postController.js   -> CRUD logic & public feed handlers
+│   ├── routes/
+│   │   ├── authRoutes.js       -> /api/auth routes
+│   │   └── postRoutes.js       -> /api/posts routes
+│   ├── uploads/                -> Uploaded image storage
+│   ├── server.js               -> Express app, session store, CORS
+│   └── test_backend.js         -> Automated end-to-end backend test suite
+│
+└── client/
+    ├── src/
+    │   ├── api/client.js       -> Fetch client with credentials: 'include'
+    │   ├── context/
+    │   │   ├── AuthContext.jsx -> User session state & login/logout
+    │   │   ├── ThemeContext.jsx-> Dark/Light mode manager
+    │   │   └── ToastContext.jsx-> Global notification toasts
+    │   ├── components/         -> Navbar, PostCard, ClapButton, TOC, Modals
+    │   └── pages/              -> FeedPage, DashboardPage, PostEditor, PostDetail
+      </pre>
+    </section>
+
+    <!-- SECTION 2: Backend Breakdown -->
+    <section>
+      <h2>2. Backend Implementation Deep-Dive</h2>
+
+      <h3>2.1 Server Bootstrap (<code>server/server.js</code>)</h3>
+      <p>
+        The main Express application connects to MongoDB, sets up trust proxy headers, enables CORS for local and tunneled domains, and attaches the MongoDB session store:
+      </p>
+      <ul>
+        <li><code>app.set('trust proxy', 1)</code>: Informs Express that it sits behind a reverse proxy (Vite / ngrok / localtunnel), allowing secure cookies to be transmitted accurately.</li>
+        <li><code>connect-mongo</code>: Automatically synchronizes active sessions with the <code>sessions</code> collection in MongoDB so sessions persist across server restarts.</li>
+        <li><code>express.static('/uploads')</code>: Publicly serves uploaded cover images at <code>/uploads/:filename</code>.</li>
+      </ul>
+
+      <h3>2.2 Data Models (<code>server/models/</code>)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Fields</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>User.js</code></td>
+            <td><code>name</code>, <code>email</code> (unique, lowercase), <code>passwordHash</code>, <code>createdAt</code></td>
+            <td>Represents user accounts. Includes regex email validation and indexed unique emails.</td>
+          </tr>
+          <tr>
+            <td><code>Post.js</code></td>
+            <td><code>title</code>, <code>content</code>, <code>author</code> (ObjectId ref to User), <code>tags</code>, <code>coverImage</code>, <code>status</code> ('draft' | 'published')</td>
+            <td>Represents stories. Contains compound indexes on <code>(author, createdAt)</code> and <code>(status, createdAt)</code> for high-performance querying.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2.3 Authentication Controller (<code>server/controllers/authController.js</code>)</h3>
+      <ul>
+        <li><b><code>signup</code>:</b> Validates name, email, and password. Hashes the password with <code>bcrypt.hash(password, 10)</code>. Creates the user in MongoDB and sets <code>req.session.userId = user._id</code>.</li>
+        <li><b><code>login</code>:</b> Finds the user by normalized email. Compares the plain password against the stored hash via <code>bcrypt.compare()</code>. On success, writes <code>req.session.userId</code>.</li>
+        <li><b><code>logout</code>:</b> Calls <code>req.session.destroy()</code> and invokes <code>res.clearCookie('connect.sid')</code> to erase the session ID cookie from the browser.</li>
+        <li><b><code>getMe</code>:</b> Checks <code>req.session.userId</code>. If present, queries MongoDB for the user with <code>.select('-passwordHash')</code> to ensure password hashes are never exposed.</li>
+      </ul>
+
+      <h3>2.4 Post CRUD Controller (<code>server/controllers/postController.js</code>)</h3>
+      <ul>
+        <li><b><code>getPublicFeed</code>:</b> Returns published articles (<code>{ status: 'published' }</code>) across all users. Populates author name and email. Supports search keywords and tag filters.</li>
+        <li><b><code>getUserPosts</code>:</b> Strictly queries articles belonging to the current user (<code>{ author: req.session.userId }</code>). Users never see other users' private drafts.</li>
+        <li><b><code>createPost</code>:</b> Creates a new post attached to <code>req.session.userId</code>, processing optional cover images via Multer.</li>
+        <li><b><code>updatePost</code> & <code>deletePost</code>:</b> Verifies ownership with <code>post.author.toString() === req.session.userId.toString()</code>. If a different user attempts to update or delete, the backend rejects the request with <code>403 Forbidden</code>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 3: Frontend Breakdown -->
+    <section>
+      <h2>3. Frontend Implementation Deep-Dive</h2>
+
+      <h3>3.1 API Client (<code>client/src/api/client.js</code>)</h3>
+      <p>
+        The frontend uses a unified <code>request()</code> helper using the native <code>fetch</code> API. Key feature:
+      </p>
+      <pre><code>const config = {
+  ...options,
+  headers,
+  credentials: 'include', // Ensures session cookies (connect.sid) are sent with every request
+};</code></pre>
+
+      <h3>3.2 Context State Management</h3>
+      <ul>
+        <li><b><code>AuthContext.jsx</code>:</b> Calls <code>GET /api/auth/me</code> when the app loads. Maintains <code>user</code>, <code>loading</code>, and exposes <code>login()</code>, <code>signup()</code>, and <code>logout()</code>.</li>
+        <li><b><code>ThemeContext.jsx</code>:</b> Tracks Dark vs Light theme, writes to <code>localStorage</code>, and dynamically adds/removes the <code>.dark</code> class on the HTML root.</li>
+        <li><b><code>ToastContext.jsx</code>:</b> Provides instant feedback toasts (<code>toast.success()</code>, <code>toast.error()</code>, <code>toast.info()</code>) with auto-dismiss animations.</li>
+      </ul>
+
+      <h3>3.3 Pages & Key Components</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Page / Component</th>
+            <th>Functionality</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>FeedPage.jsx</code></td>
+            <td>Editorial Hero, featured spotlight banner, dynamic tag pills filter, multi-column glass card grid, and skeleton loaders.</td>
+          </tr>
+          <tr>
+            <td><code>DashboardPage.jsx</code></td>
+            <td>Writer analytics metrics (Total stories, published, drafts, total words written), search/sort dropdown, and interactive story table.</td>
+          </tr>
+          <tr>
+            <td><code>PostEditorPage.jsx</code></td>
+            <td>Dual-pane workspace with live markdown glass preview, formatting toolbar (<code>H2</code>, <code>Bold</code>, <code>Quotes</code>, <code>Code</code>), tag suggestions, and cover banner drag & drop uploader.</td>
+          </tr>
+          <tr>
+            <td><code>PostDetailPage.jsx</code></td>
+            <td>Reading layout with sticky glowing scroll progress bar (<code>ReadingProgressBar</code>), dynamic floating Table of Contents (<code>TableOfContents</code>), Medium-style clapping button (<code>ClapButton</code>), and author showcase.</td>
+          </tr>
+          <tr>
+            <td><code>ProtectedRoute.jsx</code></td>
+            <td>Guards private routes (<code>/dashboard</code>, <code>/posts/new</code>, <code>/posts/edit/:id</code>), redirecting unauthenticated users to <code>/login</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 4: Security & Best Practices -->
+    <section>
+      <h2>4. Security & Best Practices</h2>
+      <div class="card">
+        <ul>
+          <li><b>Password Hashing:</b> Uses <code>bcrypt</code> with 10 salt rounds to defend against rainbow table attacks.</li>
+          <li><b>Zero Credential Leakage:</b> Password hashes are stripped before returning user objects to the client.</li>
+          <li><b>Strict Ownership Enforcement:</b> Every mutate operation (update/delete) enforces that the logged-in user is the document's author.</li>
+          <li><b>Input Validation:</b> Validates email formats, password lengths, and required post fields on both client and server layers.</li>
+          <li><b>File Upload Restrictions:</b> Multer enforces a 5MB size limit and strictly validates MIME types for JPEG, PNG, WebP, and GIF images.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Sharing & Tunnels -->
+    <section>
+      <h2>5. Sharing over ngrok & localtunnel</h2>
+      <p>
+        When tunneled through ngrok (<code>ngrok http 5173</code>) or localtunnel (<code>npx localtunnel --port 5173</code>):
+      </p>
+      <ol>
+        <li>External traffic enters through the public HTTPS URL (e.g. <code>https://xyz.ngrok-free.app</code>).</li>
+        <li>Vite receives the request and relays API calls (<code>/api/*</code>) locally to Express on port 5000.</li>
+        <li>Because client-to-API requests occur under the same public origin, browsers treat session cookies as first-party, avoiding third-party cookie blocking.</li>
+      </ol>
+    </section>
+
+    <!-- Footer -->
+    <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-align: center;">
+      Generated for the Editorial Full-Stack Blog Platform • © 2026 Editorial. All rights reserved.
+    </footer>
+
+  </div>
+
+</body>
+</html>

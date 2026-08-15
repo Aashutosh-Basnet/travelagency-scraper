@@ -1,0 +1,17 @@
+{
+  "name": "blog-website",
+  "version": "1.0.0",
+  "description": "Full-Stack Blog Website with React, Vite, Express, MongoDB, and presentation deck",
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "test-server": "cd server && npm run test-api",
+    "share": "npx localtunnel --port 5173",
+    "share:lt": "npx localtunnel --port 5173",
+    "share:ngrok": "ngrok http 5173",
+    "generate-pptx": "cd server && npm run generate-pptx"
+  },
+  "keywords": ["blog", "react", "express", "mongodb", "session-auth", "ngrok", "localtunnel", "presentation"],
+  "author": "Antigravity",
+  "license": "MIT"
+}
